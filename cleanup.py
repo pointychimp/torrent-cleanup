@@ -84,3 +84,5 @@ for dir in ninetydirs:
 				logging.error(e.strerror + ": could not delete " + dir + "/" + file)
 			else:
 				logging.info('Deleted ' + dir + "/" + file)
+
+# adding a comment at the end for no reason
