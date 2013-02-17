@@ -4,7 +4,7 @@
 
 path = "/home/jwr/totallysweet/video/unsorted"
 videoextensions = ["mkv", "avi", "mp4"]
-logfile = "/home/jwr/tmp/testlog"
+logfile = "/var/log/videocleanup.log"
 
 # That's all
 
@@ -54,17 +54,19 @@ for dir in toplist:
 			showlist.append(path + "/" + dir)
 			break
 
-# Get the size of each dir, and determine if a video is 90% of that size
+# Get the size of each dir, and determine if videos are 90% of that size
 ninetydirs = []
 for dir in showlist:
 	dirsize = totaldirsize(dir)
-	# Get the size of each file and test it
-	for file in os.listdir(dir + "/"):
-		if filesize(dir + "/" + file) > dirsize * .9 and \
-		file.lower()[-3:] in videoextensions and \
-		os.path.isfile(dir + "/" + file):
-			ninetydirs.append(dir + "/")
-			break
+	files = os.listdir(dir + "/")
+	for file in files:
+		if file.lower()[-3:] not in videoextensions:
+			files.remove(file)
+	sizeofvideos = 0
+	for file in files:
+		sizeofvideos += filesize(dir + "/" + file)
+	if sizeofvideos > dirsize * .9:
+		ninetydirs.append(dir + "/")
 
 
 # Remove all the files which aren't videos from the directories which
@@ -75,14 +77,9 @@ for dir in ninetydirs:
 	for file in os.listdir(dir):
 		if filesize(dir + "/" + file) < dirsize * .1 and \
 		os.path.isfile(dir + "/" + file):
-#			os.remove(dir + "/" + file)
-#			with open(logfile, "a+") as log:
-#				log.write(datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")+ " Deleted " + dir + file + "\n")
 			try:
 				os.remove(dir + "/" + file)
 			except OSError as e:
 				logging.error(e.strerror + ": could not delete " + dir + "/" + file)
 			else:
 				logging.info('Deleted ' + dir + "/" + file)
-
-# adding a comment at the end for no reason
