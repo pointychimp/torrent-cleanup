@@ -1,7 +1,7 @@
 This script will scan through the subdirectories of a directory that
-you specify. If those subdirectories contain a video file, and that video
-file accounts for 90% or more of the directory's size, the script will
-delete everything else in that directory.
+you specify. If those subdirectories contain one or more video files,
+and those video files account for 90% or more of the directory's size,
+the script will delete everything else in that directory.
 
 This is particularly useful for cleaning up after a torrent has been
 downloaded. It will delete stupid nfo files, sample files, readme files,
