@@ -74,12 +74,46 @@ for dir in showlist:
 
 for dir in ninetydirs:
 	dirsize = totaldirsize(dir)
-	for file in os.listdir(dir):
-		if filesize(dir + "/" + file) < dirsize * .1 and \
-		os.path.isfile(dir + "/" + file):
+	# Set onebigfile to True if there is one single file which is
+	# 90% of the size
+	files = os.listdir(dir + "/")
+	for file in files:
+		if filesize(dir + "/" + file) > dirsize * .9 and \
+		os.path.isfile(dir + "/" + file) and \
+		file.lower()[-3:] in videoextensions:
+			files.remove(file)
+			onebigfile = True
+			break
+		else:
+			onebigfile = False
+
+	# If onebigfile is True, delete everything except the big file, 
+	# even if we delete some videos
+	if onebigfile == True:
+		for file in files:
 			try:
 				os.remove(dir + "/" + file)
 			except OSError as e:
 				logging.error(e.strerror + ": could not delete " + dir + "/" + file)
 			else:
 				logging.info('Deleted ' + dir + "/" + file)
+	# if onebigfile is False, delete everything that is not a video
+	if onebigfile == False:
+		for file in files:
+			if file.lower()[-3:] not in videoextensions:
+	                        try:
+					os.remove(dir + "/" + file)
+				except OSError as e:
+					logging.error(e.strerror + ": could not delete " + dir + "/" + file)
+				else:
+					logging.info('Deleted ' + dir + "/" + file)
+
+#	for file in os.listdir(dir):
+#		if filesize(dir + "/" + file) < dirsize * .1 and \
+#		os.path.isfile(dir + "/" + file):
+#			try:
+#				os.remove(dir + "/" + file)
+#			except OSError as e:
+#				logging.error(e.strerror + ": could not delete " + dir + "/" + file)
+#			else:
+#				logging.info('Deleted ' + dir + "/" + file)
